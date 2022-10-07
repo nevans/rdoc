@@ -1,4 +1,4 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 require 'optparse'
 require 'pathname'
 
@@ -164,7 +164,7 @@ class RDoc::Options
   ##
   # Files matching this pattern will be excluded
 
-  attr_accessor :exclude
+  attr_writer :exclude
 
   ##
   # The list of files to be processed
@@ -338,13 +338,17 @@ class RDoc::Options
 
   attr_reader :visibility
 
-  def initialize # :nodoc:
+  def initialize loaded_options = nil # :nodoc:
     init_ivars
+    override loaded_options if loaded_options
   end
 
   def init_ivars # :nodoc:
     @dry_run = false
-    @exclude = []
+    @exclude = %w[
+      ~\z \.orig\z \.rej\z \.bak\z
+      \.gemspec\z
+    ]
     @files = nil
     @force_output = false
     @force_update = true
@@ -412,6 +416,37 @@ class RDoc::Options
 
   def yaml_initialize tag, map # :nodoc:
     init_with map
+  end
+
+  def override map # :nodoc:
+    if map.has_key?('encoding')
+      encoding = map['encoding']
+      @encoding = encoding ? Encoding.find(encoding) : encoding
+    end
+
+    @charset        = map['charset']        if map.has_key?('charset')
+    @exclude        = map['exclude']        if map.has_key?('exclude')
+    @generator_name = map['generator_name'] if map.has_key?('generator_name')
+    @hyperlink_all  = map['hyperlink_all']  if map.has_key?('hyperlink_all')
+    @line_numbers   = map['line_numbers']   if map.has_key?('line_numbers')
+    @locale_name    = map['locale_name']    if map.has_key?('locale_name')
+    @locale_dir     = map['locale_dir']     if map.has_key?('locale_dir')
+    @main_page      = map['main_page']      if map.has_key?('main_page')
+    @markup         = map['markup']         if map.has_key?('markup')
+    @op_dir         = map['op_dir']         if map.has_key?('op_dir')
+    @show_hash      = map['show_hash']      if map.has_key?('show_hash')
+    @tab_width      = map['tab_width']      if map.has_key?('tab_width')
+    @template_dir   = map['template_dir']   if map.has_key?('template_dir')
+    @title          = map['title']          if map.has_key?('title')
+    @visibility     = map['visibility']     if map.has_key?('visibility')
+    @webcvs         = map['webcvs']         if map.has_key?('webcvs')
+
+    if map.has_key?('rdoc_include')
+      @rdoc_include = sanitize_path map['rdoc_include']
+    end
+    if map.has_key?('static_path')
+      @static_path  = sanitize_path map['static_path']
+    end
   end
 
   def == other # :nodoc:
@@ -494,6 +529,20 @@ class RDoc::Options
   end
 
   ##
+  # Create a regexp for #exclude
+
+  def exclude
+    if @exclude.nil? or Regexp === @exclude then
+      # done, #finish is being re-run
+      @exclude
+    elsif @exclude.empty? then
+      nil
+    else
+      Regexp.new(@exclude.join("|"))
+    end
+  end
+
+  ##
   # Completes any unfinished option setup business such as filtering for
   # existent files, creating a regexp for #exclude and setting a default
   # #template.
@@ -505,13 +554,7 @@ class RDoc::Options
     root = @root.to_s
     @rdoc_include << root unless @rdoc_include.include?(root)
 
-    if @exclude.nil? or Regexp === @exclude then
-      # done, #finish is being re-run
-    elsif @exclude.empty? then
-      @exclude = nil
-    else
-      @exclude = Regexp.new(@exclude.join("|"))
-    end
+    @exclude = self.exclude
 
     finish_page_dir
 
@@ -544,7 +587,13 @@ class RDoc::Options
 
     @files << @page_dir.to_s
 
-    page_dir = @page_dir.expand_path.relative_path_from @root
+    page_dir = nil
+    begin
+      page_dir = @page_dir.expand_path.relative_path_from @root
+    rescue ArgumentError
+      # On Windows, sometimes crosses different drive letters.
+      page_dir = @page_dir.expand_path
+    end
 
     @page_dir = page_dir
   end
@@ -624,16 +673,16 @@ Usage: #{opt.program_name} [options] [names...]
       end
 
       parsers.sort.each do |parser, regexp|
-        opt.banner << "  - #{parser}: #{regexp.join ', '}\n"
+        opt.banner += "  - #{parser}: #{regexp.join ', '}\n"
       end
-      opt.banner << "  - TomDoc:  Only in ruby files\n"
+      opt.banner += "  - TomDoc:  Only in ruby files\n"
 
-      opt.banner << "\n  The following options are deprecated:\n\n"
+      opt.banner += "\n  The following options are deprecated:\n\n"
 
       name_length = DEPRECATED.keys.sort_by { |k| k.length }.last.length
 
       DEPRECATED.sort_by { |k,| k }.each do |name, reason|
-        opt.banner << "    %*1$2$s  %3$s\n" % [-name_length, name, reason]
+        opt.banner += "    %*1$2$s  %3$s\n" % [-name_length, name, reason]
       end
 
       opt.accept Template do |template|
@@ -738,7 +787,7 @@ Usage: #{opt.program_name} [options] [names...]
 
       opt.on("--[no-]force-update", "-U",
              "Forces rdoc to scan all sources even if",
-             "newer than the flag file.") do |value|
+             "no files are newer than the flag file.") do |value|
         @force_update = value
       end
 
@@ -1087,7 +1136,7 @@ Usage: #{opt.program_name} [options] [names...]
 
     unless quiet then
       deprecated.each do |opt|
-        $stderr.puts 'option ' << opt << ' is deprecated: ' << DEPRECATED[opt]
+        $stderr.puts 'option ' + opt + ' is deprecated: ' + DEPRECATED[opt]
       end
     end
 
@@ -1143,8 +1192,17 @@ Usage: #{opt.program_name} [options] [names...]
 
     path.reject do |item|
       path = Pathname.new(item).expand_path
-      relative = path.relative_path_from(dot).to_s
-      relative.start_with? '..'
+      is_reject = nil
+      relative = nil
+      begin
+        relative = path.relative_path_from(dot).to_s
+      rescue ArgumentError
+        # On Windows, sometimes crosses different drive letters.
+        is_reject = true
+      else
+        is_reject = relative.start_with? '..'
+      end
+      is_reject
     end
   end
 
@@ -1187,19 +1245,6 @@ Usage: #{opt.program_name} [options] [names...]
     end
   end
 
-  ##
-  # This is compatibility code for syck
-
-  def to_yaml opts = {} # :nodoc:
-    return super if YAML.const_defined?(:ENGINE) and not YAML::ENGINE.syck?
-
-    YAML.quick_emit self, opts do |out|
-      out.map taguri, to_yaml_style do |map|
-        encode_with map
-      end
-    end
-  end
-
   # Sets the minimum visibility of a documented method.
   #
   # Accepts +:public+, +:protected+, +:private+, +:nodoc+, or +:all+.
@@ -1230,7 +1275,7 @@ Usage: #{opt.program_name} [options] [names...]
   def write_options
     RDoc.load_yaml
 
-    open '.rdoc_options', 'w' do |io|
+    File.open '.rdoc_options', 'w' do |io|
       io.set_encoding Encoding::UTF_8
 
       YAML.dump self, io

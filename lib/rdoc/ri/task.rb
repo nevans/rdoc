@@ -1,10 +1,10 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 begin
   gem 'rdoc'
 rescue Gem::LoadError
 end unless defined?(RDoc)
 
-require 'rdoc/task'
+require_relative '../task'
 
 ##
 # RDoc::RI::Task creates ri data in <code>./.rdoc</code> for your project.

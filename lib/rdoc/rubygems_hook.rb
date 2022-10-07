@@ -1,4 +1,4 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 require 'rubygems/user_interaction'
 require 'fileutils'
 require 'rdoc'
@@ -70,7 +70,7 @@ class RDoc::RubygemsHook
   def self.load_rdoc
     return if @rdoc_version
 
-    require 'rdoc/rdoc'
+    require_relative 'rdoc'
 
     @rdoc_version = Gem::Version.new ::RDoc::VERSION
   end
@@ -153,18 +153,12 @@ class RDoc::RubygemsHook
     options = nil
 
     args = @spec.rdoc_options
-
-    if @spec.respond_to? :source_paths then
-      args.concat @spec.source_paths
-    else
-      args.concat @spec.require_paths
-    end
-
+    args.concat @spec.source_paths
     args.concat @spec.extra_rdoc_files
 
     case config_args = Gem.configuration[:rdoc]
     when String then
-      args = args.concat config_args.split
+      args = args.concat config_args.split(' ')
     when Array then
       args = args.concat config_args
     end

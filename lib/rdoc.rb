@@ -1,4 +1,4 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 $DEBUG_RDOC = nil
 
 # :main: README.rdoc
@@ -62,10 +62,7 @@ module RDoc
 
   class Error < RuntimeError; end
 
-  ##
-  # RDoc version you are using
-
-  VERSION = '5.0.0.beta2'
+  require 'rdoc/version'
 
   ##
   # Method visibilities
@@ -123,9 +120,28 @@ module RDoc
     end
   end
 
-  autoload :RDoc,           'rdoc/rdoc'
+  def self.home
+    rdoc_dir = begin
+                File.expand_path('~/.rdoc')
+              rescue ArgumentError
+              end
 
-  autoload :TestCase,       'rdoc/test_case'
+    if File.directory?(rdoc_dir)
+      rdoc_dir
+    else
+      begin
+        # XDG
+        xdg_data_home = ENV["XDG_DATA_HOME"] || File.join(File.expand_path("~"), '.local', 'share')
+        unless File.exist?(xdg_data_home)
+          FileUtils.mkdir_p xdg_data_home
+        end
+        File.join xdg_data_home, "rdoc"
+      rescue Errno::EACCES
+      end
+    end
+  end
+
+  autoload :RDoc,           'rdoc/rdoc'
 
   autoload :CrossReference, 'rdoc/cross_reference'
   autoload :ERBIO,          'rdoc/erbio'
@@ -148,13 +164,11 @@ module RDoc
 
   autoload :KNOWN_CLASSES,  'rdoc/known_classes'
 
-  autoload :RubyLex,        'rdoc/ruby_lex'
-  autoload :RubyToken,      'rdoc/ruby_token'
   autoload :TokenStream,    'rdoc/token_stream'
 
   autoload :Comment,        'rdoc/comment'
 
-  autoload :I18n,           'rdoc/i18n'
+  require 'rdoc/i18n'
 
   # code objects
   #

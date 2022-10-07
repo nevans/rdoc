@@ -1,4 +1,4 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 ##
 # Extracts just the RDoc::Markup::Heading elements from a
 # RDoc::Markup::Document to help build a table of contents
@@ -82,6 +82,7 @@ class RDoc::Markup::ToTableOfContents < RDoc::Markup::Formatter
   alias accept_list_item_end   ignore
   alias accept_list_end_bullet ignore
   alias accept_list_start      ignore
+  alias accept_table           ignore
   # :startdoc:
 
 end

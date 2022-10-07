@@ -1,4 +1,4 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 ##
 # Outputs RDoc markup as RDoc markup! (mostly)
 
@@ -45,7 +45,7 @@ class RDoc::Markup::ToRdoc < RDoc::Markup::Formatter
   def initialize markup = nil
     super nil, markup
 
-    @markup.add_special(/\\\S/, :SUPPRESSED_CROSSREF)
+    @markup.add_regexp_handling(/\\\S/, :SUPPRESSED_CROSSREF)
     @width = 78
     init_tags
 
@@ -234,7 +234,35 @@ class RDoc::Markup::ToRdoc < RDoc::Markup::Formatter
       @res << part
     end
 
-    @res << "\n" unless @res =~ /\n\z/
+    @res << "\n"
+  end
+
+  ##
+  # Adds +table+ to the output
+
+  def accept_table header, body, aligns
+    widths = header.zip(body) do |h, b|
+      [h.size, b.size].max
+    end
+    aligns = aligns.map do |a|
+      case a
+      when nil
+        :center
+      when :left
+        :ljust
+      when :right
+        :rjust
+      end
+    end
+    @res << header.zip(widths, aligns) do |h, w, a|
+      h.__send__(a, w)
+    end.join("|").rstrip << "\n"
+    @res << widths.map {|w| "-" * w }.join("|") << "\n"
+    body.each do |row|
+      @res << row.zip(widths, aligns) do |t, w, a|
+        t.__send__(a, w)
+      end.join("|").rstrip << "\n"
+    end
   end
 
   ##
@@ -253,10 +281,10 @@ class RDoc::Markup::ToRdoc < RDoc::Markup::Formatter
   end
 
   ##
-  # Removes preceding \\ from the suppressed crossref +special+
+  # Removes preceding \\ from the suppressed crossref +target+
 
-  def handle_special_SUPPRESSED_CROSSREF special
-    text = special.text
+  def handle_regexp_SUPPRESSED_CROSSREF target
+    text = target.text
     text = text.sub('\\', '') unless in_tt?
     text
   end
@@ -264,7 +292,7 @@ class RDoc::Markup::ToRdoc < RDoc::Markup::Formatter
   ##
   # Adds a newline to the output
 
-  def handle_special_HARD_BREAK special
+  def handle_regexp_HARD_BREAK target
     "\n"
   end
 
