@@ -1,5 +1,8 @@
-$:.unshift File.expand_path 'lib'
-require 'rdoc/task'
+# frozen_string_literal: true
+
+$:.unshift File.expand_path('lib', __dir__) # default template dir
+
+require_relative 'lib/rdoc/task'
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 
@@ -21,7 +24,7 @@ RDoc::Task.new do |doc|
   doc.main = 'README.rdoc'
   doc.title = "rdoc #{RDoc::VERSION} Documentation"
   doc.rdoc_dir = 'html'
-  doc.rdoc_files = FileList.new %w[lib/**/*.rb *.rdoc] - PARSER_FILES
+  doc.rdoc_files = FileList.new %w[lib/**/*.rb *.rdoc doc/rdoc/markup_reference.rb] - PARSER_FILES
 end
 
 task ghpages: :rdoc do
@@ -34,14 +37,14 @@ task ghpages: :rdoc do
 end
 
 Rake::TestTask.new(:normal_test) do |t|
-  t.libs << "test/rdoc"
+  t.libs = []
   t.verbose = true
   t.deps = :generate
   t.test_files = FileList["test/**/test_*.rb"].exclude("test/rdoc/test_rdoc_rubygems_hook.rb")
 end
 
 Rake::TestTask.new(:rubygems_test) do |t|
-  t.libs << "test/rdoc"
+  t.libs = []
   t.verbose = true
   t.deps = :generate
   t.pattern = "test/rdoc/test_rdoc_rubygems_hook.rb"
@@ -80,6 +83,7 @@ parsed_files = PARSER_FILES.map do |parser_file|
       kpeg = Gem.bin_path 'kpeg', 'kpeg'
       rb_file = parser_file.gsub(/\.kpeg\z/, ".rb")
       ruby "#{kpeg} -fsv -o #{rb_file} #{parser_file}"
+      File.write(rb_file, File.read(rb_file).gsub(/ +$/, '')) # remove trailing spaces
     end
   end
 
@@ -89,6 +93,12 @@ end
 task "#{path}.gem" => package_parser_files
 desc "Generate all files used racc and kpeg"
 task :generate => parsed_files
+
+task :clean do
+  parsed_files.each do |path|
+    File.delete(path) if File.exist?(path)
+  end
+end
 
 begin
   require 'rubocop/rake_task'

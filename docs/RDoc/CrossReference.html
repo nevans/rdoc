@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::CrossReference - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::CrossReference - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -61,7 +61,7 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="../Object.html">Object</a>
+  <p class="link">Object
 </div>
 
     
@@ -74,6 +74,7 @@
   <ul class="link-list" role="directory">
     <li ><a href="#method-c-new">::new</a>
     <li ><a href="#method-i-resolve">#resolve</a>
+    <li ><a href="#method-i-resolve_method">#resolve_method</a>
   </ul>
 </div>
 
@@ -104,14 +105,18 @@
         <dt id="CLASS_REGEXP_STR">CLASS_REGEXP_STR
         <dd><p>Regular expression to match class references</p>
 <ol><li>
-<p>There can be a &#39;\&#39; in front of text to suppress the cross-reference</p>
+<p>There can be a ‘\’ in front of text to suppress the cross-reference</p>
 </li><li>
-<p>There can be a &#39;::&#39; in front of class names to reference from the top-level namespace.</p>
+<p>There can be a ‘::’ in front of class names to reference from the top-level namespace.</p>
 </li><li>
 <p>The method can be followed by parenthesis (not recommended)</p>
 </li></ol>
         <dt id="CROSSREF_REGEXP">CROSSREF_REGEXP
         <dd><p>Regular expressions matching text that should potentially have cross-reference links generated are passed to add_regexp_handling. Note that these expressions are meant to pick up text for which cross-references have been suppressed, since the suppression characters are removed by the code that is triggered.</p>
+        <dt id="METHOD_ARGS_REGEXP_STR">METHOD_ARGS_REGEXP_STR
+        <dd><p>Regular expression to match method arguments.</p>
+        <dt id="METHOD_ARG_REGEXP_STR">METHOD_ARG_REGEXP_STR
+        <dd><p>Regular expression to match a single method argument.</p>
         <dt id="METHOD_REGEXP_STR">METHOD_REGEXP_STR
         <dd><p>Regular expression to match method references.</p>
 
@@ -153,7 +158,7 @@
           <p>Allows cross-references to be created based on the given <code>context</code> (<a href="Context.html"><code>RDoc::Context</code></a>).</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/cross_reference.rb, line 111</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/cross_reference.rb, line 127</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span> <span class="ruby-identifier">context</span>
   <span class="ruby-ivar">@context</span> = <span class="ruby-identifier">context</span>
   <span class="ruby-ivar">@store</span>   = <span class="ruby-identifier">context</span>.<span class="ruby-identifier">store</span>
@@ -186,9 +191,64 @@
 <p>If the reference is found and <code>name</code> is not documented <code>text</code> will be returned.  If <code>name</code> is escaped <code>name</code> is returned.  If <code>name</code> is not found <code>text</code> is returned.</p>
 
           <div class="method-source-code" id="resolve-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/cross_reference.rb, line 125</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/cross_reference.rb, line 187</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">resolve</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">text</span>
   <span class="ruby-keyword">return</span> <span class="ruby-ivar">@seen</span>[<span class="ruby-identifier">name</span>] <span class="ruby-keyword">if</span> <span class="ruby-ivar">@seen</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">name</span>
+
+  <span class="ruby-identifier">ref</span> = <span class="ruby-keyword">case</span> <span class="ruby-identifier">name</span>
+        <span class="ruby-keyword">when</span> <span class="ruby-regexp">/^\\(#{CLASS_REGEXP_STR})$/o</span> <span class="ruby-keyword">then</span>
+          <span class="ruby-ivar">@context</span>.<span class="ruby-identifier">find_symbol</span> <span class="ruby-node">$1</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-ivar">@context</span>.<span class="ruby-identifier">find_symbol</span> <span class="ruby-identifier">name</span>
+        <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">ref</span> = <span class="ruby-identifier">resolve_method</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">ref</span>
+
+  <span class="ruby-comment"># Try a page name</span>
+  <span class="ruby-identifier">ref</span> = <span class="ruby-ivar">@store</span>.<span class="ruby-identifier">page</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword">if</span> <span class="ruby-keyword">not</span> <span class="ruby-identifier">ref</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^[\w.]+$/</span>
+
+  <span class="ruby-identifier">ref</span> = <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Alias</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">ref</span> <span class="ruby-comment"># external alias, can&#39;t link to it</span>
+
+  <span class="ruby-identifier">out</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;\\&#39;</span> <span class="ruby-keyword">then</span>
+          <span class="ruby-identifier">name</span>
+        <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^\\/</span> <span class="ruby-keyword">then</span>
+          <span class="ruby-comment"># we remove the \ only in front of what we know:</span>
+          <span class="ruby-comment"># other backslashes are treated later, only outside of &lt;tt&gt;</span>
+          <span class="ruby-identifier">ref</span> <span class="ruby-operator">?</span> <span class="ruby-node">$&#39;</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">name</span>
+        <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">ref</span> <span class="ruby-keyword">then</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">ref</span>.<span class="ruby-identifier">display?</span> <span class="ruby-keyword">then</span>
+            <span class="ruby-identifier">ref</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">text</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">text</span>
+        <span class="ruby-keyword">end</span>
+
+  <span class="ruby-ivar">@seen</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">out</span>
+
+  <span class="ruby-identifier">out</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-resolve_method" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">resolve_method</span><span
+            class="method-args">(name)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="resolve_method-source">
+            <pre><span class="ruby-comment"># File lib/rdoc/cross_reference.rb, line 134</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">resolve_method</span> <span class="ruby-identifier">name</span>
+  <span class="ruby-identifier">ref</span> = <span class="ruby-keyword">nil</span>
 
   <span class="ruby-keyword">if</span> <span class="ruby-regexp">/#{CLASS_REGEXP_STR}([.#]|::)#{METHOD_REGEXP_STR}/o</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword">then</span>
     <span class="ruby-identifier">type</span> = <span class="ruby-node">$2</span>
@@ -230,37 +290,7 @@
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-identifier">ref</span> = <span class="ruby-keyword">case</span> <span class="ruby-identifier">name</span>
-        <span class="ruby-keyword">when</span> <span class="ruby-regexp">/^\\(#{CLASS_REGEXP_STR})$/o</span> <span class="ruby-keyword">then</span>
-          <span class="ruby-ivar">@context</span>.<span class="ruby-identifier">find_symbol</span> <span class="ruby-node">$1</span>
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-ivar">@context</span>.<span class="ruby-identifier">find_symbol</span> <span class="ruby-identifier">name</span>
-        <span class="ruby-keyword">end</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">ref</span>
-
-  <span class="ruby-comment"># Try a page name</span>
-  <span class="ruby-identifier">ref</span> = <span class="ruby-ivar">@store</span>.<span class="ruby-identifier">page</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword">if</span> <span class="ruby-keyword">not</span> <span class="ruby-identifier">ref</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^[\w.]+$/</span>
-
-  <span class="ruby-identifier">ref</span> = <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Alias</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">ref</span> <span class="ruby-comment"># external alias, can&#39;t link to it</span>
-
-  <span class="ruby-identifier">out</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;\\&#39;</span> <span class="ruby-keyword">then</span>
-          <span class="ruby-identifier">name</span>
-        <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^\\/</span> <span class="ruby-keyword">then</span>
-          <span class="ruby-comment"># we remove the \ only in front of what we know:</span>
-          <span class="ruby-comment"># other backslashes are treated later, only outside of &lt;tt&gt;</span>
-          <span class="ruby-identifier">ref</span> <span class="ruby-operator">?</span> <span class="ruby-node">$&#39;</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">name</span>
-        <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">ref</span> <span class="ruby-keyword">then</span>
-          <span class="ruby-keyword">if</span> <span class="ruby-identifier">ref</span>.<span class="ruby-identifier">display?</span> <span class="ruby-keyword">then</span>
-            <span class="ruby-identifier">ref</span>
-          <span class="ruby-keyword">else</span>
-            <span class="ruby-identifier">text</span>
-          <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-identifier">text</span>
-        <span class="ruby-keyword">end</span>
-
-  <span class="ruby-ivar">@seen</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">out</span>
-
-  <span class="ruby-identifier">out</span>
+  <span class="ruby-identifier">ref</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -276,7 +306,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

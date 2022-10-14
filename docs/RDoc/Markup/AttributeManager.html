@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::Markup::AttributeManager - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::Markup::AttributeManager - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../../";
@@ -61,7 +61,7 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="../../Object.html">Object</a>
+  <p class="link">Object
 </div>
 
     
@@ -193,7 +193,7 @@
         </div>
 
         <div class="method-description">
-        <p>And this is used when the delimiters aren&#39;t the same. In this case the hash maps a pattern to the attribute character</p>
+        <p>And this is used when the delimiters aren’t the same. In this case the hash maps a pattern to the attribute character</p>
         </div>
       </div>
     </section>
@@ -262,7 +262,7 @@
 </pre>
 
           <div class="method-source-code" id="add_html-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 289</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 270</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_html</span>(<span class="ruby-identifier">tag</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">exclusive</span> = <span class="ruby-keyword">false</span>)
   <span class="ruby-identifier">bitmap</span> = <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">bitmap_for</span> <span class="ruby-identifier">name</span>
   <span class="ruby-ivar">@html_tags</span>[<span class="ruby-identifier">tag</span>.<span class="ruby-identifier">downcase</span>] = <span class="ruby-identifier">bitmap</span>
@@ -288,7 +288,7 @@
 </pre>
 
           <div class="method-source-code" id="add_regexp_handling-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 301</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 282</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_regexp_handling</span> <span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">exclusive</span> = <span class="ruby-keyword">false</span>
   <span class="ruby-identifier">bitmap</span> = <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">bitmap_for</span>(<span class="ruby-identifier">name</span>)
   <span class="ruby-ivar">@regexp_handlings</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">bitmap</span>]
@@ -314,7 +314,7 @@
 </pre>
 
           <div class="method-source-code" id="add_word_pair-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 264</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 245</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_word_pair</span>(<span class="ruby-identifier">start</span>, <span class="ruby-identifier">stop</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">exclusive</span> = <span class="ruby-keyword">false</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;Word flags may not start with &#39;&lt;&#39;&quot;</span> <span class="ruby-keyword">if</span>
     <span class="ruby-identifier">start</span>[<span class="ruby-value">0</span>,<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-string">&#39;&lt;&#39;</span>
@@ -449,18 +449,13 @@
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">convert_attrs_matching_word_pairs</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">exclusive</span>)
   <span class="ruby-comment"># first do matching ones</span>
   <span class="ruby-identifier">tags</span> = <span class="ruby-ivar">@matching_word_pairs</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">start</span>, <span class="ruby-identifier">bitmap</span><span class="ruby-operator">|</span>
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">exclusive</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">bitmap</span>)
-      <span class="ruby-keyword">true</span>
-    <span class="ruby-keyword">elsif</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">bitmap</span>)
-      <span class="ruby-keyword">true</span>
-    <span class="ruby-keyword">else</span>
-      <span class="ruby-keyword">false</span>
-    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">exclusive</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">bitmap</span>)
   }.<span class="ruby-identifier">keys</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">tags</span>.<span class="ruby-identifier">empty?</span>
-  <span class="ruby-identifier">all_tags</span> = <span class="ruby-ivar">@matching_word_pairs</span>.<span class="ruby-identifier">keys</span>
+  <span class="ruby-identifier">tags</span> = <span class="ruby-node">&quot;[#{tags.join(&quot;&quot;)}](?!#{PROTECT_ATTR})&quot;</span>
+  <span class="ruby-identifier">all_tags</span> = <span class="ruby-node">&quot;[#{@matching_word_pairs.keys.join(&quot;&quot;)}](?!#{PROTECT_ATTR})&quot;</span>
 
-  <span class="ruby-identifier">re</span> = <span class="ruby-regexp">/(^|\W|[#{all_tags.join(&quot;&quot;)}])([#{tags.join(&quot;&quot;)}])(\2*[#\\]?[\w:.\/\[\]-]+?\S?)\2(?!\2)([#{all_tags.join(&quot;&quot;)}]|\W|$)/</span>
+  <span class="ruby-identifier">re</span> = <span class="ruby-regexp">/(^|\W|#{all_tags})(#{tags})(\2*[#\\]?[\w:#{PROTECT_ATTR}.\/\[\]-]+?\S?)\2(?!\2)(#{all_tags}|\W|$)/</span>
 
   <span class="ruby-value">1</span> <span class="ruby-keyword">while</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-identifier">re</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">orig</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">attr</span> = <span class="ruby-ivar">@matching_word_pairs</span>[<span class="ruby-node">$2</span>]
@@ -490,16 +485,12 @@
           
 
           <div class="method-source-code" id="convert_attrs_word_pair_map-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 175</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 170</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">convert_attrs_word_pair_map</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">exclusive</span>)
   <span class="ruby-comment"># then non-matching</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@word_pair_map</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword">then</span>
     <span class="ruby-ivar">@word_pair_map</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">regexp</span>, <span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
-      <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive</span>
-        <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">attr</span>)
-      <span class="ruby-keyword">else</span>
-        <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">attr</span>)
-      <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">exclusive</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">attr</span>)
       <span class="ruby-value">1</span> <span class="ruby-keyword">while</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-identifier">regexp</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">orig</span><span class="ruby-operator">|</span>
         <span class="ruby-identifier">updated</span> = <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">set_attrs</span>(<span class="ruby-node">$`</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">+</span> <span class="ruby-node">$1</span>.<span class="ruby-identifier">length</span>, <span class="ruby-node">$2</span>.<span class="ruby-identifier">length</span>, <span class="ruby-identifier">attr</span>)
         <span class="ruby-keyword">if</span> <span class="ruby-identifier">updated</span>
@@ -528,16 +519,10 @@
           <p>Converts HTML tags to <a href="../../RDoc.html"><code>RDoc</code></a> attributes</p>
 
           <div class="method-source-code" id="convert_html-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 199</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 190</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">convert_html</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">exclusive</span> = <span class="ruby-keyword">false</span>)
   <span class="ruby-identifier">tags</span> = <span class="ruby-ivar">@html_tags</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">start</span>, <span class="ruby-identifier">bitmap</span><span class="ruby-operator">|</span>
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">exclusive</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">bitmap</span>)
-      <span class="ruby-keyword">true</span>
-    <span class="ruby-keyword">elsif</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">bitmap</span>)
-      <span class="ruby-keyword">true</span>
-    <span class="ruby-keyword">else</span>
-      <span class="ruby-keyword">false</span>
-    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">exclusive</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">bitmap</span>)
   }.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">join</span> <span class="ruby-string">&#39;|&#39;</span>
 
   <span class="ruby-value">1</span> <span class="ruby-keyword">while</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp">/&lt;(#{tags})&gt;(.*?)&lt;\/\1&gt;/i</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">orig</span><span class="ruby-operator">|</span>
@@ -565,14 +550,10 @@
           <p>Converts regexp handling sequences to <a href="../../RDoc.html"><code>RDoc</code></a> attributes</p>
 
           <div class="method-source-code" id="convert_regexp_handlings-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 222</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 207</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">convert_regexp_handlings</span> <span class="ruby-identifier">str</span>, <span class="ruby-identifier">attrs</span>, <span class="ruby-identifier">exclusive</span> = <span class="ruby-keyword">false</span>
   <span class="ruby-ivar">@regexp_handlings</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">regexp</span>, <span class="ruby-identifier">attribute</span><span class="ruby-operator">|</span>
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">exclusive</span>
-      <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">attribute</span>)
-    <span class="ruby-keyword">else</span>
-      <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">attribute</span>)
-    <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">exclusive</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">exclusive?</span>(<span class="ruby-identifier">attribute</span>)
     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-identifier">regexp</span>) <span class="ruby-keyword">do</span>
       <span class="ruby-identifier">capture</span> = <span class="ruby-identifier">$~</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-value">0</span> <span class="ruby-operator">:</span> <span class="ruby-value">1</span>
 
@@ -622,7 +603,7 @@
           <p>Debug method that prints a string along with its attributes</p>
 
           <div class="method-source-code" id="display_attributes-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 332</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 313</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">display_attributes</span>
   <span class="ruby-identifier">puts</span>
   <span class="ruby-identifier">puts</span> <span class="ruby-ivar">@str</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-constant">NULL</span>, <span class="ruby-string">&quot;!&quot;</span>)
@@ -682,7 +663,7 @@
           <p>Processes <code>str</code> converting attributes, HTML and regexp handlings</p>
 
           <div class="method-source-code" id="flow-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 310</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 291</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">flow</span> <span class="ruby-identifier">str</span>
   <span class="ruby-ivar">@str</span> = <span class="ruby-identifier">str</span>.<span class="ruby-identifier">dup</span>
 
@@ -718,7 +699,7 @@
           <p>Escapes regexp handling sequences of text to prevent conversion to <a href="../../RDoc.html"><code>RDoc</code></a></p>
 
           <div class="method-source-code" id="mask_protected_sequences-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 242</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 223</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">mask_protected_sequences</span>
   <span class="ruby-comment"># protect __send__, __FILE__, etc.</span>
   <span class="ruby-ivar">@str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp">/__([a-z]+)__/i</span>,
@@ -744,7 +725,7 @@
           <p>Splits the string into chunks by attribute change</p>
 
           <div class="method-source-code" id="split_into_flow-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 357</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 338</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">split_into_flow</span>
   <span class="ruby-identifier">res</span> = []
   <span class="ruby-identifier">current_attr</span> = <span class="ruby-value">0</span>
@@ -812,7 +793,7 @@
           <p>Unescapes regexp handling sequences of text</p>
 
           <div class="method-source-code" id="unmask_protected_sequences-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 254</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/attribute_manager.rb, line 235</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">unmask_protected_sequences</span>
   <span class="ruby-ivar">@str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp">/(.)#{PROTECT_ATTR}/</span>, <span class="ruby-string">&quot;\\1\000&quot;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -830,7 +811,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

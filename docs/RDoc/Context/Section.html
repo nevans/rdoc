@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::Context::Section - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::Context::Section - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../../";
@@ -61,7 +61,7 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="../../Object.html">Object</a>
+  <p class="link">Object
 </div>
 
     
@@ -184,7 +184,7 @@
           <p>Creates a new section with <code>title</code> and <code>comment</code></p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 40</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 42</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span> <span class="ruby-identifier">parent</span>, <span class="ruby-identifier">title</span>, <span class="ruby-identifier">comment</span>
   <span class="ruby-ivar">@parent</span> = <span class="ruby-identifier">parent</span>
   <span class="ruby-ivar">@title</span> = <span class="ruby-identifier">title</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">title</span>.<span class="ruby-identifier">strip</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">title</span>
@@ -217,7 +217,7 @@
           <p>Sections are equal when they have the same <a href="Section.html#attribute-i-title"><code>title</code></a></p>
 
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 52</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 54</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">==</span> <span class="ruby-identifier">other</span>
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">other</span> <span class="ruby-keyword">and</span> <span class="ruby-ivar">@title</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">title</span>
 <span class="ruby-keyword">end</span></pre>
@@ -241,7 +241,7 @@
           <p>Adds <code>comment</code> to this section</p>
 
           <div class="method-source-code" id="add_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 61</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 63</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_comment</span> <span class="ruby-identifier">comment</span>
   <span class="ruby-identifier">comment</span> = <span class="ruby-identifier">extract_comment</span> <span class="ruby-identifier">comment</span>
 
@@ -275,7 +275,7 @@
           <p>Anchor reference for linking to this section</p>
 
           <div class="method-source-code" id="aref-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 81</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 83</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">aref</span>
   <span class="ruby-identifier">title</span> = <span class="ruby-ivar">@title</span> <span class="ruby-operator">||</span> <span class="ruby-string">&#39;[untitled]&#39;</span>
 
@@ -319,7 +319,7 @@
 </pre>
 
           <div class="method-source-code" id="extract_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 96</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 98</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">extract_comment</span> <span class="ruby-identifier">comment</span>
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">comment</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Array</span> <span class="ruby-keyword">then</span>
@@ -364,7 +364,7 @@
           <p>The files comments in this section come from</p>
 
           <div class="method-source-code" id="in_files-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 135</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 137</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">in_files</span>
   <span class="ruby-keyword">return</span> [] <span class="ruby-keyword">if</span> <span class="ruby-ivar">@comments</span>.<span class="ruby-identifier">empty?</span>
 
@@ -398,7 +398,7 @@
           <p>Serializes this <a href="Section.html"><code>Section</code></a>.  The title and parsed comment are saved, but not the section parent which must be restored manually.</p>
 
           <div class="method-source-code" id="marshal_dump-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 156</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 158</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">marshal_dump</span>
   [
     <span class="ruby-constant">MARSHAL_VERSION</span>,
@@ -423,7 +423,7 @@
           <p>De-serializes this <a href="Section.html"><code>Section</code></a>.  The section parent must be restored manually.</p>
 
           <div class="method-source-code" id="marshal_load-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 167</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 169</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">marshal_load</span> <span class="ruby-identifier">array</span>
   <span class="ruby-ivar">@parent</span>  = <span class="ruby-keyword">nil</span>
 
@@ -451,7 +451,7 @@
             </div>
 
           <div class="method-source-code" id="parse-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 178</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 180</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">parse</span>
   <span class="ruby-keyword">case</span> <span class="ruby-ivar">@comments</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span> <span class="ruby-keyword">then</span>
@@ -488,12 +488,12 @@
         </div>
 
         <div class="method-description">
-          <p>The section&#39;s title, or &#39;Top Section&#39; if the title is nil.</p>
+          <p>The section’s title, or ‘Top Section’ if the title is nil.</p>
 
 <p>This is used by the table of contents template so the name is silly.</p>
 
           <div class="method-source-code" id="plain_html-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 206</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 208</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">plain_html</span>
   <span class="ruby-ivar">@title</span> <span class="ruby-operator">||</span> <span class="ruby-string">&#39;Top Section&#39;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -514,7 +514,7 @@
           <p>Removes a comment from this section if it is from the same file as <code>comment</code></p>
 
           <div class="method-source-code" id="remove_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 214</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/context/section.rb, line 216</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">remove_comment</span> <span class="ruby-identifier">comment</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@comments</span>.<span class="ruby-identifier">empty?</span>
 
@@ -545,7 +545,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

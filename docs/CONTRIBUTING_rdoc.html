@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>CONTRIBUTING - rdoc 6.3.2 Documentation</title>
+<title>CONTRIBUTING - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "./";
@@ -130,11 +130,11 @@ $ rake
 
 <p>This will install all the necessary dependencies for development with rake, generate documentation and run the tests for the first time.</p>
 
-<p>If the tests don&#39;t pass on the first run check the <a href="https://travis-ci.org/ruby/rdoc">Travis CI page for RDoc</a> to see if there are any known failures (there shouldn&#39;t be).</p>
+<p>If the tests don’t pass on the first run check the <a href="https://travis-ci.org/ruby/rdoc">Travis CI page for RDoc</a> to see if there are any known failures (there shouldn’t be).</p>
 
-<p>You can now use `rake` and `autotest` to run the tests.</p>
+<p>You can now use ‘rake` and `autotest` to run the tests.</p>
 
-<p>Note: the `rake` command must be used first before running any tests, because its used to generate various parsers implemented in <a href="RDoc.html"><code>RDoc</code></a>. Also `rake clean` is helpful to delete these generated files.</p>
+<p>Note: the ‘rake` command must be used first before running any tests, because its used to generate various parsers implemented in <a href="RDoc.html"><code>RDoc</code></a>. Also `rake clean` is helpful to delete these generated files.</p>
 
 <h2 id="label-Glossary">Glossary<span><a href="#label-Glossary">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
@@ -169,7 +169,7 @@ $ rake
 
 <h2 id="label-Plugins">Plugins<span><a href="#label-Plugins">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
-<p>When &#39;rdoc/rdoc&#39; is loaded <a href="RDoc.html"><code>RDoc</code></a> looks for &#39;rdoc/discover&#39; files in your installed gems.  This can be used to load parsers, alternate generators, or additional preprocessor directives.  An rdoc plugin layout should look something like this:</p>
+<p>When ‘rdoc/rdoc’ is loaded <a href="RDoc.html"><code>RDoc</code></a> looks for ‘rdoc/discover’ files in your installed gems.  This can be used to load parsers, alternate generators, or additional preprocessor directives.  An rdoc plugin layout should look something like this:</p>
 
 <pre class="ruby"><span class="ruby-identifier">lib</span><span class="ruby-operator">/</span><span class="ruby-identifier">rdoc</span><span class="ruby-operator">/</span><span class="ruby-identifier">discover</span>.<span class="ruby-identifier">rb</span>
 <span class="ruby-identifier">lib</span><span class="ruby-operator">/</span><span class="ruby-identifier">my</span><span class="ruby-operator">/</span><span class="ruby-identifier">rdoc</span><span class="ruby-operator">/</span><span class="ruby-identifier">plugin</span>.<span class="ruby-identifier">rb</span>
@@ -204,7 +204,7 @@ $ rake
 
 <h2 id="label-Option+Parsing">Option Parsing<span><a href="#label-Option+Parsing">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
-<p>Option parsing is handled by <a href="RDoc/Options.html"><code>RDoc::Options</code></a>.  When you&#39;re writing a generator you can provide the user with extra options by providing a class method <code>setup_options</code>.  The option parser will call this after your generator is loaded.  See <a href="RDoc/Generator.html"><code>RDoc::Generator</code></a> for details.</p>
+<p>Option parsing is handled by <a href="RDoc/Options.html"><code>RDoc::Options</code></a>.  When you’re writing a generator you can provide the user with extra options by providing a class method <code>setup_options</code>.  The option parser will call this after your generator is loaded.  See <a href="RDoc/Generator.html"><code>RDoc::Generator</code></a> for details.</p>
 
 <h2 id="label-File+Parsing">File Parsing<span><a href="#label-File+Parsing">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
@@ -256,7 +256,7 @@ $ rake
 
 <p>Additional documentation markup formats can be added to <a href="RDoc.html"><code>RDoc</code></a>.  A markup parsing class must respond to ::parse and accept a String argument containing the markup format.  An RDoc::Document containing documentation items (RDoc::Markup::Heading, <a href="RDoc/Markup/Paragraph.html"><code>RDoc::Markup::Paragraph</code></a>, <a href="RDoc/Markup/Verbatim.html"><code>RDoc::Markup::Verbatim</code></a>, etc.) must be returned.</p>
 
-<p>To register the parser with rdoc, add the markup type&#39;s name and class to the RDoc::Text::MARKUP_FORMAT hash like:</p>
+<p>To register the parser with rdoc, add the markup type’s name and class to the RDoc::Text::MARKUP_FORMAT hash like:</p>
 
 <pre class="ruby"><span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Text</span><span class="ruby-operator">::</span><span class="ruby-constant">MARKUP_FORMAT</span>[<span class="ruby-string">&#39;rdoc&#39;</span>] = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Markup</span>
 </pre>
@@ -267,7 +267,7 @@ $ rake
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

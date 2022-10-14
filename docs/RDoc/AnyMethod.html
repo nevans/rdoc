@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::AnyMethod - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::AnyMethod - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -147,7 +147,7 @@
         </div>
 
         <div class="method-description">
-        <p>Don&#39;t rename #initialize to ::new</p>
+        <p>Don’t rename #initialize to ::new</p>
         </div>
       </div>
       <div id="attribute-i-params" class="method-detail">
@@ -158,6 +158,16 @@
 
         <div class="method-description">
         <p>Parameters for this method</p>
+        </div>
+      </div>
+      <div id="attribute-i-section_title" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">section_title</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        <p>The section title of the method (if defined in a C file via <code>:category:</code>)</p>
         </div>
       </div>
     </section>
@@ -183,7 +193,7 @@
             </div>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 43</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 46</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span> <span class="ruby-identifier">text</span>, <span class="ruby-identifier">name</span>
   <span class="ruby-keyword">super</span>
 
@@ -217,7 +227,7 @@
           <p>Adds <code>an_alias</code> as an alias for this method in <code>context</code>.</p>
 
           <div class="method-source-code" id="add_alias-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 56</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 59</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_alias</span> <span class="ruby-identifier">an_alias</span>, <span class="ruby-identifier">context</span> = <span class="ruby-keyword">nil</span>
   <span class="ruby-identifier">method</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">an_alias</span>.<span class="ruby-identifier">text</span>, <span class="ruby-identifier">an_alias</span>.<span class="ruby-identifier">new_name</span>
 
@@ -245,10 +255,10 @@
         </div>
 
         <div class="method-description">
-          <p>Prefix for <code>aref</code> is &#39;method&#39;.</p>
+          <p>Prefix for <code>aref</code> is ‘method’.</p>
 
           <div class="method-source-code" id="aref_prefix-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 73</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 76</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">aref_prefix</span>
   <span class="ruby-string">&#39;method&#39;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -268,10 +278,10 @@
         <div class="method-description">
           <p>The <a href="AnyMethod.html#method-i-call_seq"><code>call_seq</code></a> or the <a href="AnyMethod.html#method-i-param_seq"><code>param_seq</code></a> with method name, if there is no call_seq.</p>
 
-<p>Use this for displaying a method&#39;s argument lists.</p>
+<p>Use this for displaying a method’s argument lists.</p>
 
           <div class="method-source-code" id="arglists-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 82</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 85</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">arglists</span>
   <span class="ruby-keyword">if</span> <span class="ruby-ivar">@call_seq</span> <span class="ruby-keyword">then</span>
     <span class="ruby-ivar">@call_seq</span>
@@ -296,7 +306,7 @@
           <p>Different ways to call this method</p>
 
           <div class="method-source-code" id="call_seq-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 93</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 96</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">call_seq</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">call_seq</span> = <span class="ruby-identifier">_call_seq</span>
     <span class="ruby-identifier">call_seq</span> = <span class="ruby-identifier">is_alias_for</span>.<span class="ruby-identifier">_call_seq</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">is_alias_for</span>
@@ -325,7 +335,7 @@
 <p>See also <a href="AnyMethod.html#method-i-param_seq"><code>param_seq</code></a></p>
 
           <div class="method-source-code" id="call_seq-3D-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 109</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 112</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">call_seq=</span> <span class="ruby-identifier">call_seq</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">call_seq</span>.<span class="ruby-identifier">empty?</span>
 
@@ -348,7 +358,7 @@
           <p>Dumps this <a href="AnyMethod.html"><code>AnyMethod</code></a> for use by ri.  See also <a href="AnyMethod.html#method-i-marshal_load"><code>marshal_load</code></a></p>
 
           <div class="method-source-code" id="marshal_dump-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 137</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 140</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">marshal_dump</span>
   <span class="ruby-identifier">aliases</span> = <span class="ruby-ivar">@aliases</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span>
     [<span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">a</span>.<span class="ruby-identifier">comment</span>)]
@@ -400,7 +410,7 @@
 </li></ul>
 
           <div class="method-source-code" id="marshal_load-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 174</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 177</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">marshal_load</span> <span class="ruby-identifier">array</span>
   <span class="ruby-identifier">initialize_visibility</span>
 
@@ -463,7 +473,7 @@
 <p>If the method has no assigned name, it extracts it from <a href="AnyMethod.html#method-i-call_seq"><code>call_seq</code></a>.</p>
 
           <div class="method-source-code" id="name-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 223</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 226</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-ivar">@name</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@name</span>
 
@@ -486,10 +496,10 @@
         </div>
 
         <div class="method-description">
-          <p>A list of this method&#39;s method and yield parameters.  <code>call-seq</code> params are preferred over parsed method and block params.</p>
+          <p>A list of this method’s method and yield parameters.  <code>call-seq</code> params are preferred over parsed method and block params.</p>
 
           <div class="method-source-code" id="param_list-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 236</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 239</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">param_list</span>
   <span class="ruby-keyword">if</span> <span class="ruby-ivar">@call_seq</span> <span class="ruby-keyword">then</span>
     <span class="ruby-identifier">params</span> = <span class="ruby-ivar">@call_seq</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&quot;\n&quot;</span>).<span class="ruby-identifier">last</span>
@@ -531,10 +541,10 @@
         </div>
 
         <div class="method-description">
-          <p>Pretty parameter list for this method.  If the method&#39;s parameters were given by <code>call-seq</code> it is preferred over the parsed values.</p>
+          <p>Pretty parameter list for this method.  If the method’s parameters were given by <code>call-seq</code> it is preferred over the parsed values.</p>
 
           <div class="method-source-code" id="param_seq-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 268</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 271</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">param_seq</span>
   <span class="ruby-keyword">if</span> <span class="ruby-ivar">@call_seq</span> <span class="ruby-keyword">then</span>
     <span class="ruby-identifier">params</span> = <span class="ruby-ivar">@call_seq</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&quot;\n&quot;</span>).<span class="ruby-identifier">last</span>
@@ -583,7 +593,7 @@
             </div>
 
           <div class="method-source-code" id="store-3D-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 299</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 302</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">store=</span> <span class="ruby-identifier">store</span>
   <span class="ruby-keyword">super</span>
 
@@ -606,7 +616,7 @@
           <p>For methods that <code>super</code>, find the superclass method that would be called.</p>
 
           <div class="method-source-code" id="superclass_method-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 308</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 311</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">superclass_method</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@calls_super</span>
   <span class="ruby-keyword">return</span> <span class="ruby-ivar">@superclass_method</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@superclass_method</span>
@@ -644,7 +654,7 @@
           <p><a href="AnyMethod.html#method-i-call_seq"><code>call_seq</code></a> without deduplication and alias lookup.</p>
 
           <div class="method-source-code" id="_call_seq-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 327</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/any_method.rb, line 330</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">_call_seq</span>
   <span class="ruby-ivar">@call_seq</span> <span class="ruby-keyword">if</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-ivar">@call_seq</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@call_seq</span>
 <span class="ruby-keyword">end</span></pre>
@@ -662,7 +672,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

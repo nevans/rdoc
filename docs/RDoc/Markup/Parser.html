@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::Markup::Parser - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::Markup::Parser - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../../";
@@ -61,7 +61,7 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="../../Object.html">Object</a>
+  <p class="link">Object
 </div>
 
     
@@ -495,6 +495,12 @@
       <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">&#39; &#39;</span> <span class="ruby-operator">*</span> <span class="ruby-identifier">indent</span>
     <span class="ruby-keyword">when</span> <span class="ruby-value">:BREAK</span>, <span class="ruby-value">:TEXT</span> <span class="ruby-keyword">then</span>
       <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">data</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:BLOCKQUOTE</span> <span class="ruby-keyword">then</span>
+      <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">&#39;&gt;&gt;&gt;&#39;</span>
+      <span class="ruby-identifier">peek_type</span>, <span class="ruby-identifier">_</span>, <span class="ruby-identifier">peek_column</span> = <span class="ruby-identifier">peek_token</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">peek_type</span> <span class="ruby-operator">!=</span> <span class="ruby-value">:NEWLINE</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">peek_column</span>
+        <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">&#39; &#39;</span> <span class="ruby-operator">*</span> (<span class="ruby-identifier">peek_column</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">column</span> <span class="ruby-operator">-</span> <span class="ruby-value">3</span>)
+      <span class="ruby-keyword">end</span>
     <span class="ruby-keyword">else</span> <span class="ruby-comment"># *LIST_TOKENS</span>
       <span class="ruby-identifier">list_marker</span> = <span class="ruby-keyword">case</span> <span class="ruby-identifier">type</span>
                     <span class="ruby-keyword">when</span> <span class="ruby-value">:BULLET</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">data</span>
@@ -539,7 +545,7 @@
           <p>Pulls the next token from the stream.</p>
 
           <div class="method-source-code" id="get-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 321</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 327</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get</span>
   <span class="ruby-ivar">@current_token</span> = <span class="ruby-ivar">@tokens</span>.<span class="ruby-identifier">shift</span>
   <span class="ruby-identifier">p</span> <span class="ruby-value">:get</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-ivar">@current_token</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@debug</span>
@@ -566,7 +572,7 @@
 <p>Returns <code>parent</code>.</p>
 
           <div class="method-source-code" id="parse-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 336</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 342</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">parse</span> <span class="ruby-identifier">parent</span>, <span class="ruby-identifier">indent</span> = <span class="ruby-value">0</span>
   <span class="ruby-identifier">p</span> <span class="ruby-value">:parse_start</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">indent</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@debug</span>
 
@@ -606,11 +612,8 @@
       <span class="ruby-identifier">unget</span>
       <span class="ruby-identifier">parse_text</span> <span class="ruby-identifier">parent</span>, <span class="ruby-identifier">indent</span>
     <span class="ruby-keyword">when</span> <span class="ruby-value">:BLOCKQUOTE</span> <span class="ruby-keyword">then</span>
-      <span class="ruby-identifier">type</span>, <span class="ruby-identifier">_</span>, <span class="ruby-identifier">column</span> = <span class="ruby-identifier">get</span>
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:NEWLINE</span>
-        <span class="ruby-identifier">type</span>, <span class="ruby-identifier">_</span>, <span class="ruby-identifier">column</span> = <span class="ruby-identifier">get</span>
-      <span class="ruby-keyword">end</span>
-      <span class="ruby-identifier">unget</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">type</span>
+      <span class="ruby-keyword">nil</span> <span class="ruby-keyword">while</span> (<span class="ruby-identifier">type</span>, = <span class="ruby-identifier">get</span>; <span class="ruby-identifier">type</span>) <span class="ruby-keyword">and</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">!=</span> <span class="ruby-value">:NEWLINE</span>
+      <span class="ruby-identifier">_</span>, <span class="ruby-identifier">_</span>, <span class="ruby-identifier">column</span>, = <span class="ruby-identifier">peek_token</span>
       <span class="ruby-identifier">bq</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Markup</span><span class="ruby-operator">::</span><span class="ruby-constant">BlockQuote</span>.<span class="ruby-identifier">new</span>
       <span class="ruby-identifier">p</span> <span class="ruby-value">:blockquote_start</span> <span class="ruby-operator">=&gt;</span> [<span class="ruby-identifier">data</span>, <span class="ruby-identifier">column</span>] <span class="ruby-keyword">if</span> <span class="ruby-ivar">@debug</span>
       <span class="ruby-identifier">parse</span> <span class="ruby-identifier">bq</span>, <span class="ruby-identifier">column</span>
@@ -647,7 +650,7 @@
           <p>Returns the next token on the stream without modifying the stream</p>
 
           <div class="method-source-code" id="peek_token-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 410</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 413</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">peek_token</span>
   <span class="ruby-identifier">token</span> = <span class="ruby-ivar">@tokens</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> []
   <span class="ruby-identifier">p</span> <span class="ruby-value">:peek</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">token</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@debug</span>
@@ -670,7 +673,7 @@
           <p>Creates the StringScanner</p>
 
           <div class="method-source-code" id="setup_scanner-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 461</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 464</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">setup_scanner</span> <span class="ruby-identifier">input</span>
   <span class="ruby-ivar">@s</span> = <span class="ruby-constant">MyStringScanner</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">input</span>
 <span class="ruby-keyword">end</span></pre>
@@ -693,7 +696,7 @@
 <p>Optionally raises an error if the next token is not of the expected type.</p>
 
           <div class="method-source-code" id="skip-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 470</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 473</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">skip</span> <span class="ruby-identifier">token_type</span>, <span class="ruby-identifier">error</span> = <span class="ruby-keyword">true</span>
   <span class="ruby-identifier">type</span>, = <span class="ruby-identifier">get</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">type</span> <span class="ruby-comment"># end of stream</span>
@@ -718,7 +721,7 @@
           <p>Turns text <code>input</code> into a stream of tokens</p>
 
           <div class="method-source-code" id="tokenize-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 481</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 484</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">tokenize</span> <span class="ruby-identifier">input</span>
   <span class="ruby-identifier">setup_scanner</span> <span class="ruby-identifier">input</span>
 
@@ -785,7 +788,10 @@
                  [<span class="ruby-value">:NOTE</span>, <span class="ruby-ivar">@s</span>[<span class="ruby-value">1</span>], <span class="ruby-operator">*</span><span class="ruby-identifier">pos</span>]
                <span class="ruby-comment"># &gt;&gt;&gt; followed by end of line =&gt; :BLOCKQUOTE</span>
                <span class="ruby-keyword">when</span> <span class="ruby-ivar">@s</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/&gt;&gt;&gt; *(\w+)?$/</span>) <span class="ruby-keyword">then</span>
-                 [<span class="ruby-value">:BLOCKQUOTE</span>, <span class="ruby-ivar">@s</span>[<span class="ruby-value">1</span>], <span class="ruby-operator">*</span><span class="ruby-identifier">pos</span>]
+                 <span class="ruby-keyword">if</span> <span class="ruby-identifier">word</span> = <span class="ruby-ivar">@s</span>[<span class="ruby-value">1</span>]
+                   <span class="ruby-ivar">@s</span>.<span class="ruby-identifier">unscan</span>(<span class="ruby-identifier">word</span>)
+                 <span class="ruby-keyword">end</span>
+                 [<span class="ruby-value">:BLOCKQUOTE</span>, <span class="ruby-identifier">word</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">pos</span>]
                <span class="ruby-comment"># anything else: :TEXT</span>
                <span class="ruby-keyword">else</span>
                  <span class="ruby-ivar">@s</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/(.*?)(  )?\r?$/</span>)
@@ -819,7 +825,7 @@
           <p>Returns the current token to the token stream</p>
 
           <div class="method-source-code" id="unget-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 568</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/parser.rb, line 574</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">unget</span>
   <span class="ruby-identifier">token</span> = <span class="ruby-ivar">@current_token</span>
   <span class="ruby-identifier">p</span> <span class="ruby-value">:unget</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">token</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@debug</span>
@@ -840,7 +846,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::Parser::C - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::Parser::C - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../../";
@@ -117,6 +117,7 @@
     <li ><a href="#method-i-handle_tab_width">#handle_tab_width</a>
     <li ><a href="#method-i-load_variable_map">#load_variable_map</a>
     <li ><a href="#method-i-look_for_directives_in">#look_for_directives_in</a>
+    <li ><a href="#method-i-new_comment">#new_comment</a>
     <li ><a href="#method-i-rb_scan_args">#rb_scan_args</a>
     <li ><a href="#method-i-remove_commented_out_lines">#remove_commented_out_lines</a>
     <li ><a href="#method-i-scan">#scan</a>
@@ -133,7 +134,7 @@
 
   <section class="description">
     
-<p><a href="C.html"><code>RDoc::Parser::C</code></a> attempts to parse <a href="C.html"><code>C</code></a> extension files.  It looks for the standard patterns that you find in extensions: <code>rb_define_class</code>, <code>rb_define_method</code> and so on.  It tries to find the corresponding <a href="C.html"><code>C</code></a> source for the methods and extract comments, but if we fail we don&#39;t worry too much.</p>
+<p><a href="C.html"><code>RDoc::Parser::C</code></a> attempts to parse <a href="C.html"><code>C</code></a> extension files.  It looks for the standard patterns that you find in extensions: <code>rb_define_class</code>, <code>rb_define_method</code> and so on.  It tries to find the corresponding <a href="C.html"><code>C</code></a> source for the methods and extract comments, but if we fail we don’t worry too much.</p>
 
 <p>The comments associated with a Ruby method are extracted from the <a href="C.html"><code>C</code></a> comment block associated with the routine that <em>implements</em> that method, that is to say the method whose name is given in the <code>rb_define_method</code> call. For example, you might write:</p>
 
@@ -163,7 +164,7 @@
    ...
    rb_define_method(rb_cArray, &quot;flatten&quot;, rb_ary_flatten, 0);</pre>
 
-<p>Here <a href="../../RDoc.html"><code>RDoc</code></a> will determine from the <code>rb_define_method</code> line that there&#39;s a method called “flatten” in class Array, and will look for the implementation in the method <code>rb_ary_flatten</code>. It will then use the comment from that method in the HTML output. This method must be in the same source file as the <code>rb_define_method</code>.</p>
+<p>Here <a href="../../RDoc.html"><code>RDoc</code></a> will determine from the <code>rb_define_method</code> line that there’s a method called “flatten” in class Array, and will look for the implementation in the method <code>rb_ary_flatten</code>. It will then use the comment from that method in the HTML output. This method must be in the same source file as the <code>rb_define_method</code>.</p>
 
 <p>The comment blocks may include special directives:</p>
 <dl class="rdoc-list label-list"><dt>Document-class: <code>name</code>
@@ -202,10 +203,10 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 <p>Documentation for the named attribute.</p>
 </dd><dt>call-seq:  <em>text up to an empty line</em>
 <dd>
-<p>Because <a href="C.html"><code>C</code></a> source doesn&#39;t give descriptive names to Ruby-level parameters, you need to document the calling sequence explicitly</p>
+<p>Because <a href="C.html"><code>C</code></a> source doesn’t give descriptive names to Ruby-level parameters, you need to document the calling sequence explicitly</p>
 </dd></dl>
 
-<p>In addition, <a href="../../RDoc.html"><code>RDoc</code></a> assumes by default that the <a href="C.html"><code>C</code></a> method implementing a Ruby function is in the same source file as the rb_define_method call. If this isn&#39;t the case, add the comment:</p>
+<p>In addition, <a href="../../RDoc.html"><code>RDoc</code></a> assumes by default that the <a href="C.html"><code>C</code></a> method implementing a Ruby function is in the same source file as the rb_define_method call. If this isn’t the case, add the comment:</p>
 
 <pre>rb_define_method(....);  // in filename</pre>
 
@@ -334,7 +335,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
             </div>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 166</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 171</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span> <span class="ruby-identifier">top_level</span>, <span class="ruby-identifier">file_name</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">stats</span>
   <span class="ruby-keyword">super</span>
 
@@ -344,6 +345,8 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 
   <span class="ruby-ivar">@classes</span>           = <span class="ruby-identifier">load_variable_map</span> <span class="ruby-value">:c_class_variables</span>
   <span class="ruby-ivar">@singleton_classes</span> = <span class="ruby-identifier">load_variable_map</span> <span class="ruby-value">:c_singleton_class_variables</span>
+
+  <span class="ruby-ivar">@markup</span> = <span class="ruby-ivar">@options</span>.<span class="ruby-identifier">markup</span>
 
   <span class="ruby-comment"># class_variable =&gt; { function =&gt; [method, ...] }</span>
   <span class="ruby-ivar">@methods</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">h</span>, <span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">h</span>[<span class="ruby-identifier">f</span>] = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span>, <span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-identifier">i</span>[<span class="ruby-identifier">m</span>] = [] } }
@@ -404,7 +407,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Add alias, either from a direct alias definition, or from two method that reference the same function.</p>
 
           <div class="method-source-code" id="add_alias-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 243</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 250</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_alias</span>(<span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">class_obj</span>, <span class="ruby-identifier">old_name</span>, <span class="ruby-identifier">new_name</span>, <span class="ruby-identifier">comment</span>)
   <span class="ruby-identifier">al</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Alias</span>.<span class="ruby-identifier">new</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-identifier">old_name</span>, <span class="ruby-identifier">new_name</span>, <span class="ruby-string">&#39;&#39;</span>
   <span class="ruby-identifier">al</span>.<span class="ruby-identifier">singleton</span> = <span class="ruby-ivar">@singleton_classes</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">var_name</span>
@@ -431,7 +434,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for rb_define_alias</p>
 
           <div class="method-source-code" id="do_aliases-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 215</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 222</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_aliases</span>
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/rb_define_alias\s*\(
                  \s*(\w+),
@@ -472,23 +475,23 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for rb_attr and rb_define_attr</p>
 
           <div class="method-source-code" id="do_attrs-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 256</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 263</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_attrs</span>
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/rb_attr\s*\(
                  \s*(\w+),
                  \s*([\w&quot;()]+),
-                 \s*([01]),
-                 \s*([01]),
-                 \s*\w+\);/xm</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span><span class="ruby-operator">|</span>
+                 #{BOOL_ARG_PATTERN},
+                 #{BOOL_ARG_PATTERN},
+                 \s*\w+\);/xmo</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">handle_attr</span> <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span>
   <span class="ruby-keyword">end</span>
 
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r%rb_define_attr\(
                            \s*([\w\.]+),
                            \s*&quot;([^&quot;]+)&quot;,
-                           \s*(\d+),
-                           \s*(\d+)\s*\);
-              %xm</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span><span class="ruby-operator">|</span>
+                           #{BOOL_ARG_PATTERN},
+                           #{BOOL_ARG_PATTERN}\);
+              %xmo</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">handle_attr</span> <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
@@ -509,7 +512,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for boot_defclass</p>
 
           <div class="method-source-code" id="do_boot_defclass-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 279</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 286</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_boot_defclass</span>
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/(\w+)\s*=\s*boot_defclass\s*\(\s*&quot;(\w+?)&quot;,\s*(\w+?)\s*\)/</span>) <span class="ruby-keyword">do</span>
     <span class="ruby-operator">|</span><span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">parent</span><span class="ruby-operator">|</span>
@@ -534,100 +537,98 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for rb_define_class, boot_defclass, rb_define_class_under and rb_singleton_class</p>
 
           <div class="method-source-code" id="do_classes_and_modules-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 291</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 298</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_classes_and_modules</span>
   <span class="ruby-identifier">do_boot_defclass</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@file_name</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;class.c&quot;</span>
 
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(
     <span class="ruby-regexp">%r(
+      (?&lt;open&gt;\s*\(\s*) {0}
+      (?&lt;close&gt;\s*\)\s*) {0}
+      (?&lt;name&gt;\s*&quot;(?&lt;class_name&gt;\w+)&quot;) {0}
+      (?&lt;parent&gt;\s*(?:
+        (?&lt;parent_name&gt;[\w\*\s\(\)\.\-&gt;]+) |
+        rb_path2class\s*\(\s*&quot;(?&lt;path&gt;[\w:]+)&quot;\s*\)
+      )) {0}
+      (?&lt;under&gt;\w+) {0}
+
       (?&lt;var_name&gt;[\w\.]+)\s* =
       \s*rb_(?:
         define_(?:
-          class(?: # rb_define_class(class_name_1, parent_name_1)
-            \s*\(
-              \s*&quot;(?&lt;class_name_1&gt;\w+)&quot;,
-              \s*(?&lt;parent_name_1&gt;\w+)\s*
-            \)
-          |
-            _under\s*\( # rb_define_class_under(class_under, class_name2, parent_name2...)
-              \s* (?&lt;class_under&gt;\w+),
-              \s* &quot;(?&lt;class_name_2&gt;\w+)&quot;,
-              \s*
-              (?:
-                (?&lt;parent_name_2&gt;[\w\*\s\(\)\.\-&gt;]+) |
-                rb_path2class\(&quot;(?&lt;path&gt;[\w:]+)&quot;\)
-              )
+          class(?: # rb_define_class(name, parent_name)
+            \(\s*
+              \g&lt;name&gt;,
+              \g&lt;parent&gt;
             \s*\)
+          |
+            _under\g&lt;open&gt; # rb_define_class_under(under, name, parent_name...)
+              \g&lt;under&gt;,
+              \g&lt;name&gt;,
+              \g&lt;parent&gt;
+            \g&lt;close&gt;
           )
         |
-          module(?: # rb_define_module(module_name_1)
-            \s*\(
-              \s*&quot;(?&lt;module_name_1&gt;\w+)&quot;\s*
-            \)
+          (?&lt;module&gt;)
+          module(?: # rb_define_module(name)
+            \g&lt;open&gt;
+              \g&lt;name&gt;
+            \g&lt;close&gt;
           |
-            _under\s*\( # rb_define_module_under(module_under, module_name_2)
-              \s*(?&lt;module_under&gt;\w+),
-              \s*&quot;(?&lt;module_name_2&gt;\w+)&quot;
-            \s*\)
+            _under\g&lt;open&gt; # rb_define_module_under(under, name)
+              \g&lt;under&gt;,
+              \g&lt;name&gt;
+            \g&lt;close&gt;
           )
         )
     |
-      struct_define_without_accessor\s*\( # rb_struct_define_without_accessor(class_name_3, parent_name_3, ...)
-        \s*&quot;(?&lt;class_name_3&gt;\w+)&quot;,
-        \s*(?&lt;parent_name_3&gt;\w+),
-        \s*\w+,        # Allocation function
-        (?:\s*&quot;\w+&quot;,)* # Attributes
-        \s*NULL
-      \)
+      (?&lt;attributes&gt;(?:\s*&quot;\w+&quot;,)*\s*NULL\s*) {0}
+      struct_define(?:
+        \g&lt;open&gt; # rb_struct_define(name, ...)
+          \g&lt;name&gt;,
+      |
+        _under\g&lt;open&gt; # rb_struct_define_under(under, name, ...)
+          \g&lt;under&gt;,
+          \g&lt;name&gt;,
+      |
+        _without_accessor(?:
+          \g&lt;open&gt; # rb_struct_define_without_accessor(name, parent_name, ...)
+        |
+          _under\g&lt;open&gt; # rb_struct_define_without_accessor_under(under, name, parent_name, ...)
+            \g&lt;under&gt;,
+        )
+          \g&lt;name&gt;,
+          \g&lt;parent&gt;,
+          \s*\w+,        # Allocation function
+      )
+        \g&lt;attributes&gt;
+      \g&lt;close&gt;
     |
-      singleton_class\s*\( # rb_singleton_class(target_class_name)
-        \s*(?&lt;target_class_name&gt;\w+)
-      \)
+      singleton_class\g&lt;open&gt; # rb_singleton_class(target_class_name)
+        (?&lt;target_class_name&gt;\w+)
+      \g&lt;close&gt;
       )
     )mx</span>
   ) <span class="ruby-keyword">do</span>
-    <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:class_name_1</span>]
-    <span class="ruby-identifier">type</span> = <span class="ruby-value">:class</span>
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">class_name</span>
-      <span class="ruby-comment"># rb_define_class(class_name_1, parent_name_1)</span>
-      <span class="ruby-identifier">parent_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:parent_name_1</span>]
-      <span class="ruby-comment">#under = nil</span>
-    <span class="ruby-keyword">else</span>
-      <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:class_name_2</span>]
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">class_name</span>
-        <span class="ruby-comment"># rb_define_class_under(class_under, class_name2, parent_name2...)</span>
-        <span class="ruby-identifier">parent_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:parent_name_2</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">$~</span>[<span class="ruby-value">:path</span>]
-        <span class="ruby-identifier">under</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:class_under</span>]
-      <span class="ruby-keyword">else</span>
-        <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:class_name_3</span>]
-        <span class="ruby-keyword">if</span> <span class="ruby-identifier">class_name</span>
-          <span class="ruby-comment"># rb_struct_define_without_accessor(class_name_3, parent_name_3, ...)</span>
-          <span class="ruby-identifier">parent_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:parent_name_3</span>]
-          <span class="ruby-comment">#under = nil</span>
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-identifier">type</span> = <span class="ruby-value">:module</span>
-          <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:module_name_1</span>]
-          <span class="ruby-comment">#parent_name = nil</span>
-          <span class="ruby-keyword">if</span> <span class="ruby-identifier">class_name</span>
-            <span class="ruby-comment"># rb_define_module(module_name_1)</span>
-            <span class="ruby-comment">#under = nil</span>
-          <span class="ruby-keyword">else</span>
-            <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:module_name_2</span>]
-            <span class="ruby-keyword">if</span> <span class="ruby-identifier">class_name</span>
-              <span class="ruby-comment"># rb_define_module_under(module_under, module_name_1)</span>
-              <span class="ruby-identifier">under</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:module_under</span>]
-            <span class="ruby-keyword">else</span>
-              <span class="ruby-comment"># rb_singleton_class(target_class_name)</span>
-              <span class="ruby-identifier">target_class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:target_class_name</span>]
-              <span class="ruby-identifier">handle_singleton</span> <span class="ruby-identifier">$~</span>[<span class="ruby-value">:var_name</span>], <span class="ruby-identifier">target_class_name</span>
-              <span class="ruby-keyword">next</span>
-            <span class="ruby-keyword">end</span>
-          <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">target_class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:target_class_name</span>]
+      <span class="ruby-comment"># rb_singleton_class(target_class_name)</span>
+      <span class="ruby-identifier">handle_singleton</span> <span class="ruby-identifier">$~</span>[<span class="ruby-value">:var_name</span>], <span class="ruby-identifier">target_class_name</span>
+      <span class="ruby-keyword">next</span>
     <span class="ruby-keyword">end</span>
 
-    <span class="ruby-identifier">handle_class_module</span>(<span class="ruby-identifier">$~</span>[<span class="ruby-value">:var_name</span>], <span class="ruby-identifier">type</span>, <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">parent_name</span>, <span class="ruby-identifier">under</span>)
+    <span class="ruby-identifier">var_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:var_name</span>]
+    <span class="ruby-identifier">type</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:module</span>] <span class="ruby-operator">?</span> <span class="ruby-value">:module</span> <span class="ruby-operator">:</span> <span class="ruby-value">:class</span>
+    <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:class_name</span>]
+    <span class="ruby-identifier">parent_name</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:parent_name</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">$~</span>[<span class="ruby-value">:path</span>]
+    <span class="ruby-identifier">under</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:under</span>]
+    <span class="ruby-identifier">attributes</span> = <span class="ruby-identifier">$~</span>[<span class="ruby-value">:attributes</span>]
+
+    <span class="ruby-identifier">handle_class_module</span>(<span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">type</span>, <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">parent_name</span>, <span class="ruby-identifier">under</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">attributes</span> <span class="ruby-keyword">and</span> <span class="ruby-operator">!</span><span class="ruby-identifier">parent_name</span> <span class="ruby-comment"># rb_struct_define *not* without_accessor</span>
+      <span class="ruby-identifier">true_flag</span> = <span class="ruby-string">&#39;Qtrue&#39;</span>
+      <span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/&quot;\K\w+(?=&quot;)/</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr_name</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">handle_attr</span> <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">true_flag</span>, <span class="ruby-identifier">true_flag</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -647,7 +648,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for rb_define_variable, rb_define_readonly_variable, rb_define_const and rb_define_global_const</p>
 
           <div class="method-source-code" id="do_constants-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 391</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 396</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_constants</span>
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r%\Wrb_define_
                  ( variable          |
@@ -706,13 +707,13 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for rb_include_module</p>
 
           <div class="method-source-code" id="do_includes-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 437</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 442</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_includes</span>
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/rb_include_module\s*\(\s*(\w+?),\s*(\w+?)\s*\)/</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span>,<span class="ruby-identifier">m</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">cls</span> = <span class="ruby-ivar">@classes</span>[<span class="ruby-identifier">c</span>]
     <span class="ruby-identifier">m</span> = <span class="ruby-ivar">@known_classes</span>[<span class="ruby-identifier">m</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>
 
-    <span class="ruby-identifier">comment</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+    <span class="ruby-identifier">comment</span> = <span class="ruby-identifier">new_comment</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
     <span class="ruby-identifier">incl</span> = <span class="ruby-identifier">cls</span>.<span class="ruby-identifier">add_include</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Include</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">m</span>, <span class="ruby-identifier">comment</span>)
     <span class="ruby-identifier">incl</span>.<span class="ruby-identifier">record_location</span> <span class="ruby-ivar">@top_level</span>
   <span class="ruby-keyword">end</span>
@@ -734,7 +735,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Scans <a href="C.html#attribute-i-content"><code>content</code></a> for rb_define_method, rb_define_singleton_method, rb_define_module_function, rb_define_private_method, rb_define_global_function and define_filetest_function</p>
 
           <div class="method-source-code" id="do_methods-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 453</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 458</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_methods</span>
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r%rb_define_
                  (
@@ -796,7 +797,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Creates classes and module that were missing were defined due to the file order being different than the declaration order.</p>
 
           <div class="method-source-code" id="do_missing-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 502</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 507</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">do_missing</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@missing_dependencies</span>.<span class="ruby-identifier">empty?</span>
 
@@ -825,14 +826,14 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Finds the comment for an alias on <code>class_name</code> from <code>new_name</code> to <code>old_name</code></p>
 
           <div class="method-source-code" id="find_alias_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 518</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 523</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_alias_comment</span> <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">new_name</span>, <span class="ruby-identifier">old_name</span>
   <span class="ruby-identifier">content</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">%r%((?&gt;/\*.*?\*/\s+))
                 rb_define_alias\(\s*#{Regexp.escape class_name}\s*,
                                  \s*&quot;#{Regexp.escape new_name}&quot;\s*,
                                  \s*&quot;#{Regexp.escape old_name}&quot;\s*\);%xm</span>
 
-  <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">$1</span> <span class="ruby-operator">||</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>)
+  <span class="ruby-identifier">new_comment</span>(<span class="ruby-node">$1</span> <span class="ruby-operator">||</span> <span class="ruby-string">&#39;&#39;</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -850,12 +851,12 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
         <div class="method-description">
           <p>Finds a comment for rb_define_attr, rb_attr or Document-attr.</p>
 
-<p><code>var_name</code> is the <a href="C.html"><code>C</code></a> class variable the attribute is defined on. <code>attr_name</code> is the attribute&#39;s name.</p>
+<p><code>var_name</code> is the <a href="C.html"><code>C</code></a> class variable the attribute is defined on. <code>attr_name</code> is the attribute’s name.</p>
 
-<p><code>read</code> and <code>write</code> are the read/write flags (&#39;1&#39; or &#39;0&#39;).  Either both or neither must be provided.</p>
+<p><code>read</code> and <code>write</code> are the read/write flags (‘1’ or ‘0’).  Either both or neither must be provided.</p>
 
           <div class="method-source-code" id="find_attr_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 536</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 541</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_attr_comment</span> <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">write</span> = <span class="ruby-keyword">nil</span>
   <span class="ruby-identifier">attr_name</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span> <span class="ruby-identifier">attr_name</span>
 
@@ -883,7 +884,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
               <span class="ruby-string">&#39;&#39;</span>
             <span class="ruby-keyword">end</span>
 
-  <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+  <span class="ruby-identifier">new_comment</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -902,7 +903,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Find the <a href="C.html"><code>C</code></a> code corresponding to a Ruby method</p>
 
           <div class="method-source-code" id="find_body-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 594</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 599</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_body</span> <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">meth_name</span>, <span class="ruby-identifier">meth_obj</span>, <span class="ruby-identifier">file_content</span>, <span class="ruby-identifier">quiet</span> = <span class="ruby-keyword">false</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">file_content</span>
     <span class="ruby-ivar">@body_table</span> <span class="ruby-operator">||=</span> {}
@@ -912,7 +913,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">type</span>
   <span class="ruby-keyword">when</span> <span class="ruby-value">:func_def</span>
-    <span class="ruby-identifier">comment</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>], <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+    <span class="ruby-identifier">comment</span> = <span class="ruby-identifier">new_comment</span> <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>], <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
     <span class="ruby-identifier">body</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">1</span>]
     <span class="ruby-identifier">offset</span>, = <span class="ruby-identifier">args</span>[<span class="ruby-value">2</span>]
 
@@ -942,7 +943,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 
     <span class="ruby-identifier">body</span>
   <span class="ruby-keyword">when</span> <span class="ruby-value">:macro_def</span>
-    <span class="ruby-identifier">comment</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>], <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+    <span class="ruby-identifier">comment</span> = <span class="ruby-identifier">new_comment</span> <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>], <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
     <span class="ruby-identifier">body</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">1</span>]
     <span class="ruby-identifier">offset</span>, = <span class="ruby-identifier">args</span>[<span class="ruby-value">2</span>]
 
@@ -992,7 +993,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
       <div id="method-i-find_class" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">find_class</span><span
-            class="method-args">(raw_name, name)</span>
+            class="method-args">(raw_name, name, base_name = nil)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
@@ -1000,14 +1001,15 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Finds a <a href="../NormalClass.html"><code>RDoc::NormalClass</code></a> or <a href="../NormalModule.html"><code>RDoc::NormalModule</code></a> for <code>raw_name</code></p>
 
           <div class="method-source-code" id="find_class-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 678</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_class</span>(<span class="ruby-identifier">raw_name</span>, <span class="ruby-identifier">name</span>)
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 683</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_class</span>(<span class="ruby-identifier">raw_name</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">base_name</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@classes</span>[<span class="ruby-identifier">raw_name</span>]
     <span class="ruby-keyword">if</span> <span class="ruby-identifier">raw_name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^rb_m/</span>
       <span class="ruby-identifier">container</span> = <span class="ruby-ivar">@top_level</span>.<span class="ruby-identifier">add_module</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">NormalModule</span>, <span class="ruby-identifier">name</span>
     <span class="ruby-keyword">else</span>
       <span class="ruby-identifier">container</span> = <span class="ruby-ivar">@top_level</span>.<span class="ruby-identifier">add_class</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">NormalClass</span>, <span class="ruby-identifier">name</span>
     <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">container</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">base_name</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">base_name</span>
 
     <span class="ruby-identifier">container</span>.<span class="ruby-identifier">record_location</span> <span class="ruby-ivar">@top_level</span>
     <span class="ruby-ivar">@classes</span>[<span class="ruby-identifier">raw_name</span>] = <span class="ruby-identifier">container</span>
@@ -1051,7 +1053,7 @@ Init_foo(void) {
 VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
 
           <div class="method-source-code" id="find_class_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 718</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 724</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_class_comment</span> <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">class_mod</span>
   <span class="ruby-identifier">comment</span> = <span class="ruby-keyword">nil</span>
 
@@ -1059,7 +1061,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
       ((?&gt;/\*.*?\*/\s+))
       (static\s+)?
       void\s+
-      Init_#{class_name}\s*(?:_\(\s*)?\(\s*(?:void\s*)?\)%xmi</span> <span class="ruby-keyword">then</span>
+      Init(?:VM)?_(?i:#{class_name})\s*(?:_\(\s*)?\(\s*(?:void\s*)?\)%xm</span> <span class="ruby-keyword">then</span>
     <span class="ruby-identifier">comment</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp">%r%Document-(?:class|module):\s+#{class_name}%</span>, <span class="ruby-string">&#39;&#39;</span>)
   <span class="ruby-keyword">elsif</span> <span class="ruby-ivar">@content</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">%r%Document-(?:class|module):\s+#{class_name}\s*?
                        (?:&lt;\s+[:,\w]+)?\n((?&gt;.*?\*/))%xm</span> <span class="ruby-keyword">then</span>
@@ -1074,7 +1076,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
     <span class="ruby-identifier">comment</span> = <span class="ruby-string">&#39;&#39;</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-identifier">comment</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+  <span class="ruby-identifier">comment</span> = <span class="ruby-identifier">new_comment</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
   <span class="ruby-identifier">comment</span>.<span class="ruby-identifier">normalize</span>
 
   <span class="ruby-identifier">look_for_directives_in</span> <span class="ruby-identifier">class_mod</span>, <span class="ruby-identifier">comment</span>
@@ -1098,7 +1100,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Finds a comment matching <code>type</code> and <code>const_name</code> either above the comment or in the matching Document- section.</p>
 
           <div class="method-source-code" id="find_const_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 774</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 780</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_const_comment</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">const_name</span>, <span class="ruby-identifier">class_name</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-ivar">@const_table</span> <span class="ruby-operator">||=</span> {}
   <span class="ruby-ivar">@const_table</span>[<span class="ruby-ivar">@content</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">gen_const_table</span> <span class="ruby-ivar">@content</span>
@@ -1110,7 +1112,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
     <span class="ruby-identifier">table</span>[<span class="ruby-identifier">const_name</span>] <span class="ruby-operator">||</span>
     <span class="ruby-string">&#39;&#39;</span>
 
-  <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+  <span class="ruby-identifier">new_comment</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -1129,7 +1131,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Handles modifiers in <code>comment</code> and updates <code>meth_obj</code> as appropriate.</p>
 
           <div class="method-source-code" id="find_modifiers-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 791</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 797</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_modifiers</span> <span class="ruby-identifier">comment</span>, <span class="ruby-identifier">meth_obj</span>
   <span class="ruby-identifier">comment</span>.<span class="ruby-identifier">normalize</span>
   <span class="ruby-identifier">comment</span>.<span class="ruby-identifier">extract_call_seq</span> <span class="ruby-identifier">meth_obj</span>
@@ -1153,7 +1155,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Finds a <code>Document-method</code> override for <code>meth_obj</code> on <code>class_name</code></p>
 
           <div class="method-source-code" id="find_override_comment-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 801</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 807</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_override_comment</span> <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">meth_obj</span>
   <span class="ruby-identifier">name</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span> <span class="ruby-identifier">meth_obj</span>.<span class="ruby-identifier">name</span>
   <span class="ruby-identifier">prefix</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span> <span class="ruby-identifier">meth_obj</span>.<span class="ruby-identifier">name_prefix</span>
@@ -1169,7 +1171,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
 
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">comment</span>
 
-  <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+  <span class="ruby-identifier">new_comment</span> <span class="ruby-identifier">comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -1188,7 +1190,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Generate a Ruby-method table</p>
 
           <div class="method-source-code" id="gen_body_table-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 569</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 574</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">gen_body_table</span> <span class="ruby-identifier">file_content</span>
   <span class="ruby-identifier">table</span> = {}
   <span class="ruby-identifier">file_content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r{
@@ -1227,7 +1229,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Generate a const table</p>
 
           <div class="method-source-code" id="gen_const_table-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 751</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 757</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">gen_const_table</span> <span class="ruby-identifier">file_content</span>
   <span class="ruby-identifier">table</span> = {}
   <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r{
@@ -1263,11 +1265,11 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Creates a new <a href="../Attr.html"><code>RDoc::Attr</code></a> <code>attr_name</code> on class <code>var_name</code> that is either <code>read</code>, <code>write</code> or both</p>
 
           <div class="method-source-code" id="handle_attr-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 823</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 829</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_attr</span>(<span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">attr_name</span>, <span class="ruby-identifier">read</span>, <span class="ruby-identifier">write</span>)
   <span class="ruby-identifier">rw</span> = <span class="ruby-string">&#39;&#39;</span>
-  <span class="ruby-identifier">rw</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39;R&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-string">&#39;1&#39;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">read</span>
-  <span class="ruby-identifier">rw</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39;W&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-string">&#39;1&#39;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">write</span>
+  <span class="ruby-identifier">rw</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39;R&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">TRUE_VALUES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">read</span>)
+  <span class="ruby-identifier">rw</span> <span class="ruby-operator">+=</span> <span class="ruby-string">&#39;W&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">TRUE_VALUES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">write</span>)
 
   <span class="ruby-identifier">class_name</span> = <span class="ruby-ivar">@known_classes</span>[<span class="ruby-identifier">var_name</span>]
 
@@ -1305,7 +1307,7 @@ VALUE cFoo = rb_define_class(&quot;Foo&quot;, rb_cObject);</pre>
           <p>Creates a new <a href="../NormalClass.html"><code>RDoc::NormalClass</code></a> or <a href="../NormalModule.html"><code>RDoc::NormalModule</code></a> based on <code>type</code> named <code>class_name</code> in <code>parent</code> which was assigned to the <a href="C.html"><code>C</code></a> <code>var_name</code>.</p>
 
           <div class="method-source-code" id="handle_class_module-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 852</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 858</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_class_module</span>(<span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">type</span>, <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">parent</span>, <span class="ruby-identifier">in_module</span>)
   <span class="ruby-identifier">parent_name</span> = <span class="ruby-ivar">@known_classes</span>[<span class="ruby-identifier">parent</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">parent</span>
 
@@ -1382,13 +1384,13 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 <p>Will override <code>INT2FIX(300)</code> with the value <code>300</code> in the output <a href="../../RDoc.html"><code>RDoc</code></a>.  Values may include quotes and escaped colons (:).</p>
 
           <div class="method-source-code" id="handle_constants-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 917</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 923</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_constants</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">const_name</span>, <span class="ruby-identifier">definition</span>)
   <span class="ruby-identifier">class_name</span> = <span class="ruby-ivar">@known_classes</span>[<span class="ruby-identifier">var_name</span>]
 
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">class_name</span>
 
-  <span class="ruby-identifier">class_obj</span> = <span class="ruby-identifier">find_class</span> <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">class_name</span>
+  <span class="ruby-identifier">class_obj</span> = <span class="ruby-identifier">find_class</span> <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">class_name</span>[<span class="ruby-regexp">/::\K[^:]+\z/</span>]
 
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">class_obj</span> <span class="ruby-keyword">then</span>
     <span class="ruby-ivar">@options</span>.<span class="ruby-identifier">warn</span> <span class="ruby-string">&#39;Enclosing class or module %p is not known&#39;</span> <span class="ruby-operator">%</span> [<span class="ruby-identifier">const_name</span>]
@@ -1416,7 +1418,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 
       <span class="ruby-identifier">new_comment</span> = <span class="ruby-node">&quot;#{$1}#{new_comment.lstrip}&quot;</span>
 
-      <span class="ruby-identifier">new_comment</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">new_comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>
+      <span class="ruby-identifier">new_comment</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">new_comment</span>(<span class="ruby-identifier">new_comment</span>, <span class="ruby-ivar">@top_level</span>, <span class="ruby-value">:c</span>)
 
       <span class="ruby-identifier">con</span> = <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Constant</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">const_name</span>, <span class="ruby-identifier">new_definition</span>, <span class="ruby-identifier">new_comment</span>
     <span class="ruby-keyword">else</span>
@@ -1447,7 +1449,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Removes ifdefs that would otherwise confuse us</p>
 
           <div class="method-source-code" id="handle_ifdefs_in-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 968</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 974</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_ifdefs_in</span>(<span class="ruby-identifier">body</span>)
   <span class="ruby-identifier">body</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/^#ifdef HAVE_PROTOTYPES.*?#else.*?\n(.*?)#endif.*?\n/m</span>, <span class="ruby-string">&#39;\1&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1468,7 +1470,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Adds an <a href="../AnyMethod.html"><code>RDoc::AnyMethod</code></a> <code>meth_name</code> defined on a class or module assigned to <code>var_name</code>.  <code>type</code> is the type of method definition function used. <code>singleton_method</code> and <code>module_function</code> create a singleton method.</p>
 
           <div class="method-source-code" id="handle_method-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 977</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 983</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_method</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">var_name</span>, <span class="ruby-identifier">meth_name</span>, <span class="ruby-identifier">function</span>, <span class="ruby-identifier">param_count</span>,
                   <span class="ruby-identifier">source_file</span> = <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">class_name</span> = <span class="ruby-ivar">@known_classes</span>[<span class="ruby-identifier">var_name</span>]
@@ -1518,12 +1520,18 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
                         <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">p_count</span> <span class="ruby-operator">==</span> <span class="ruby-value">-1</span> <span class="ruby-keyword">then</span> <span class="ruby-comment"># argc, argv</span>
                           <span class="ruby-identifier">rb_scan_args</span> <span class="ruby-identifier">body</span>
                         <span class="ruby-keyword">else</span>
-                          <span class="ruby-node">&quot;(#{(1..p_count).map { |i| &quot;p#{i}&quot; }.join &#39;, &#39;})&quot;</span>
+                          <span class="ruby-identifier">args</span> = (<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-identifier">p_count</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;p#{i}&quot;</span> }
+                          <span class="ruby-node">&quot;(#{args.join &#39;, &#39;})&quot;</span>
                         <span class="ruby-keyword">end</span>
 
 
       <span class="ruby-identifier">meth_obj</span>.<span class="ruby-identifier">record_location</span> <span class="ruby-ivar">@top_level</span>
+
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">meth_obj</span>.<span class="ruby-identifier">section_title</span>
+        <span class="ruby-identifier">class_obj</span>.<span class="ruby-identifier">temporary_section</span> = <span class="ruby-identifier">class_obj</span>.<span class="ruby-identifier">add_section</span>(<span class="ruby-identifier">meth_obj</span>.<span class="ruby-identifier">section_title</span>)
+      <span class="ruby-keyword">end</span>
       <span class="ruby-identifier">class_obj</span>.<span class="ruby-identifier">add_method</span> <span class="ruby-identifier">meth_obj</span>
+
       <span class="ruby-ivar">@stats</span>.<span class="ruby-identifier">add_method</span> <span class="ruby-identifier">meth_obj</span>
       <span class="ruby-identifier">meth_obj</span>.<span class="ruby-identifier">visibility</span> = <span class="ruby-value">:private</span> <span class="ruby-keyword">if</span> <span class="ruby-string">&#39;private_method&#39;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">type</span>
     <span class="ruby-keyword">end</span>
@@ -1546,7 +1554,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Registers a singleton class <code>sclass_var</code> as a singleton of <code>class_var</code></p>
 
           <div class="method-source-code" id="handle_singleton-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1041</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1053</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_singleton</span> <span class="ruby-identifier">sclass_var</span>, <span class="ruby-identifier">class_var</span>
   <span class="ruby-identifier">class_name</span> = <span class="ruby-ivar">@known_classes</span>[<span class="ruby-identifier">class_var</span>]
 
@@ -1570,7 +1578,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Normalizes tabs in <code>body</code></p>
 
           <div class="method-source-code" id="handle_tab_width-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1051</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1063</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_tab_width</span>(<span class="ruby-identifier">body</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-regexp">/\t/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">body</span>
     <span class="ruby-identifier">tab_width</span> = <span class="ruby-ivar">@options</span>.<span class="ruby-identifier">tab_width</span>
@@ -1601,7 +1609,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Loads the variable map with the given <code>name</code> from the <a href="../Store.html"><code>RDoc::Store</code></a>, if present.</p>
 
           <div class="method-source-code" id="load_variable_map-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1069</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1081</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">load_variable_map</span> <span class="ruby-identifier">map_name</span>
   <span class="ruby-keyword">return</span> {} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">files</span> = <span class="ruby-ivar">@store</span>.<span class="ruby-identifier">cache</span>[<span class="ruby-identifier">map_name</span>]
   <span class="ruby-keyword">return</span> {} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">name_map</span> = <span class="ruby-identifier">files</span>[<span class="ruby-ivar">@file_name</span>]
@@ -1644,7 +1652,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 <p>This method modifies the <code>comment</code></p>
 
           <div class="method-source-code" id="look_for_directives_in-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1098</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1110</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">look_for_directives_in</span> <span class="ruby-identifier">context</span>, <span class="ruby-identifier">comment</span>
   <span class="ruby-ivar">@preprocess</span>.<span class="ruby-identifier">handle</span> <span class="ruby-identifier">comment</span>, <span class="ruby-identifier">context</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">directive</span>, <span class="ruby-identifier">param</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">case</span> <span class="ruby-identifier">directive</span>
@@ -1665,6 +1673,29 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 
       </div>
 
+      <div id="method-i-new_comment" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">new_comment</span><span
+            class="method-args">(text = nil, location = nil, language = nil)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="new_comment-source">
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1237</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new_comment</span> <span class="ruby-identifier">text</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">location</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">language</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Comment</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">text</span>, <span class="ruby-identifier">location</span>, <span class="ruby-identifier">language</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">comment</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">comment</span>.<span class="ruby-identifier">format</span> = <span class="ruby-ivar">@markup</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
       <div id="method-i-rb_scan_args" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">rb_scan_args</span><span
@@ -1673,10 +1704,10 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
         </div>
 
         <div class="method-description">
-          <p>Extracts parameters from the <code>method_body</code> and returns a method parameter string.  Follows 1.9.3dev&#39;s scan-arg-spec, see <a href="../../README_rdoc.html">README</a>.EXT</p>
+          <p>Extracts parameters from the <code>method_body</code> and returns a method parameter string.  Follows 1.9.3dev’s scan-arg-spec, see README.EXT</p>
 
           <div class="method-source-code" id="rb_scan_args-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1117</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">rb_scan_args</span> <span class="ruby-identifier">method_body</span>
   <span class="ruby-identifier">method_body</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/rb_scan_args\((.*?)\)/m</span>
   <span class="ruby-keyword">return</span> <span class="ruby-string">&#39;(*args)&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-node">$1</span>
@@ -1772,7 +1803,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Removes lines that are commented out that might otherwise get picked up when scanning for classes and methods</p>
 
           <div class="method-source-code" id="remove_commented_out_lines-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1200</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1212</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">remove_commented_out_lines</span>
   <span class="ruby-ivar">@content</span> = <span class="ruby-ivar">@content</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">%r%//.*rb_define_%</span>, <span class="ruby-string">&#39;//&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -1793,7 +1824,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
           <p>Extracts the classes, modules, methods, attributes, constants and aliases from a <a href="C.html"><code>C</code></a> file and returns an <a href="../TopLevel.html"><code>RDoc::TopLevel</code></a> for this file</p>
 
           <div class="method-source-code" id="scan-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1208</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/parser/c.rb, line 1220</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">scan</span>
   <span class="ruby-identifier">remove_commented_out_lines</span>
 
@@ -1824,7 +1855,7 @@ rb_define_const(cFoo, &quot;PERFECT&quot;, INT2FIX(300));</pre>
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 

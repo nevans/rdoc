@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class RDoc::Markup::PreProcess - rdoc 6.3.2 Documentation</title>
+<title>class RDoc::Markup::PreProcess - rdoc 6.4.0 Documentation</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../../";
@@ -61,7 +61,7 @@
 <div id="parent-class-section" class="nav-section">
   <h3>Parent</h3>
 
-  <p class="link"><a href="../../Object.html">Object</a>
+  <p class="link">Object
 </div>
 
     
@@ -288,7 +288,7 @@
           <p>Look for the given file in the directory containing the current file, and then in each of the directories specified in the RDOC_INCLUDE path</p>
 
           <div class="method-source-code" id="find_include_file-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/pre_process.rb, line 286</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/pre_process.rb, line 288</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">find_include_file</span>(<span class="ruby-identifier">name</span>)
   <span class="ruby-identifier">to_search</span> = [<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-ivar">@input_file_name</span>)].<span class="ruby-identifier">concat</span> <span class="ruby-ivar">@include_path</span>
   <span class="ruby-identifier">to_search</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
@@ -314,11 +314,11 @@
         <div class="method-description">
           <p>Look for directives in the given <code>text</code>.</p>
 
-<p>Options that we don&#39;t handle are yielded.  If the block returns false the directive is restored to the text.  If the block returns nil or no block was given the directive is handled according to the registered directives. If a String was returned the directive is replaced with the string.</p>
+<p>Options that we don’t handle are yielded.  If the block returns false the directive is restored to the text.  If the block returns nil or no block was given the directive is handled according to the registered directives. If a String was returned the directive is replaced with the string.</p>
 
 <p>If no matching directive was registered the directive is restored to the text.</p>
 
-<p>If <code>code_object</code> is given and the directive is unknown then the directive&#39;s parameter is set as metadata on the <code>code_object</code>.  See <a href="../CodeObject.html#attribute-i-metadata"><code>RDoc::CodeObject#metadata</code></a> for details.</p>
+<p>If <code>code_object</code> is given and the directive is unknown then the directive’s parameter is set as metadata on the <code>code_object</code>.  See <a href="../CodeObject.html#attribute-i-metadata"><code>RDoc::CodeObject#metadata</code></a> for details.</p>
 
           <div class="method-source-code" id="handle-source">
             <pre><span class="ruby-comment"># File lib/rdoc/markup/pre_process.rb, line 99</span>
@@ -399,6 +399,8 @@
     <span class="ruby-keyword">if</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">Context</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">code_object</span> <span class="ruby-keyword">then</span>
       <span class="ruby-identifier">section</span> = <span class="ruby-identifier">code_object</span>.<span class="ruby-identifier">add_section</span> <span class="ruby-identifier">param</span>
       <span class="ruby-identifier">code_object</span>.<span class="ruby-identifier">temporary_section</span> = <span class="ruby-identifier">section</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-constant">RDoc</span><span class="ruby-operator">::</span><span class="ruby-constant">AnyMethod</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">code_object</span> <span class="ruby-keyword">then</span>
+      <span class="ruby-identifier">code_object</span>.<span class="ruby-identifier">section_title</span> = <span class="ruby-identifier">param</span>
     <span class="ruby-keyword">end</span>
 
     <span class="ruby-identifier">blankline</span> <span class="ruby-comment"># ignore category if we&#39;re not on an RDoc::Context</span>
@@ -493,12 +495,12 @@
         <div class="method-description">
           <p>Handles the <code>:include: <em>filename</em></code> directive.</p>
 
-<p>If the first line of the included file starts with &#39;#&#39;, and contains an encoding information in the form &#39;coding:&#39; or &#39;coding=&#39;, it is removed.</p>
+<p>If the first line of the included file starts with ‘#’, and contains an encoding information in the form ‘coding:’ or ‘coding=’, it is removed.</p>
 
-<p>If all lines in the included file start with a &#39;#&#39;, this leading &#39;#&#39; is removed before inclusion. The included content is indented like the <code>:include:</code> directive.</p>
+<p>If all lines in the included file start with a ‘#’, this leading ‘#’ is removed before inclusion. The included content is indented like the <code>:include:</code> directive.</p>
 
           <div class="method-source-code" id="include_file-source">
-            <pre><span class="ruby-comment"># File lib/rdoc/markup/pre_process.rb, line 260</span>
+            <pre><span class="ruby-comment"># File lib/rdoc/markup/pre_process.rb, line 262</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">include_file</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">indent</span>, <span class="ruby-identifier">encoding</span>
   <span class="ruby-identifier">full_name</span> = <span class="ruby-identifier">find_include_file</span> <span class="ruby-identifier">name</span>
 
@@ -534,7 +536,7 @@
 
 <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.3.2.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 
